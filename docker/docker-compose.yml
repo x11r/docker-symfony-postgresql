@@ -18,11 +18,9 @@ services:
   app:
     build: ./php
     volumes:
-#      - ../src:/var/www
-    #  - lara10-vendor:/var/www/vendor
       - ../www:/var/www
       - ../src:/var/src
-      # - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php/php.ini:/usr/local/etc/php/php.ini
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
       - ./share:/share
     working_dir: /var/www
@@ -31,7 +29,8 @@ services:
     depends_on:
       - db
   db:
-    image: postgresql:13
+    image: postgres:15.3-alpine
+    command: -p ${DATABASE_PORT}
     environment:
       TZ: Tokyo/Asia
       LANG: js_JP.utf8
@@ -44,23 +43,5 @@ services:
     ports:
       - ${DATABASE_PORT}:${DATABASE_PORT}
 
-#  db:
-#    image: mariadb:10.9
-#    environment:
-#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-#      MYSQL_DATABASE: ${MYSQL_DB_NAME}
-#      MYSQL_USER: ${MYSQL_USER}
-#      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-#      MYSQL_TCP_PORT: ${MYSQL_TCP_PORT}
-#    volumes:
-#      - mariadb-lara10:/var/lib/mysql
-#      - ./share:/shar
-#    ports:
-#      - "${MYSQL_TCP_PORT}:${MYSQL_TCP_PORT}"
-
-#volumes:
-#  mariadb-lara10:
-#  lara10-vendor:
-#  lara10-framework:
 volumes:
   pg-symfony6:
