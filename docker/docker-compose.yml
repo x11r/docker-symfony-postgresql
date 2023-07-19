@@ -1,0 +1,66 @@
+version: "3.9"
+services:
+  web:
+    image: nginx:1.21-alpine
+    volumes:
+      - ./nginx/template:/etc/nginx/template
+      - ../www:/var/www
+    command: /bin/sh -c "DOLLAR=$$ envsubst < /etc/nginx/template/default.conf > /etc/nginx/conf.d/default.conf; nginx -g 'daemon off;' "
+    environment:
+      TZ: Asia/Tokyo
+      SERVER_APP_NAME: app
+      SERVER_APP_PORT: ${SERVER_APP_PORT}
+      SERVER_WEB_PORT: ${SERVER_WEB_PORT}
+    ports:
+      - "${SERVER_WEB_PORT}:${SERVER_WEB_PORT}"
+    depends_on:
+    - app
+  app:
+    build: ./php
+    volumes:
+#      - ../src:/var/www
+    #  - lara10-vendor:/var/www/vendor
+      - ../www:/var/www
+      - ../src:/var/src
+      # - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - ./share:/share
+    working_dir: /var/www
+    environment:
+      TZ: Asia/Tokyo
+    depends_on:
+      - db
+  db:
+    image: postgresql:13
+    environment:
+      TZ: Tokyo/Asia
+      LANG: js_JP.utf8
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      PGDATA: ${DBDATA}
+    volumes:
+      - pg-symfony6:${DBDATA}
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+
+#  db:
+#    image: mariadb:10.9
+#    environment:
+#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+#      MYSQL_USER: ${MYSQL_USER}
+#      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+#      MYSQL_TCP_PORT: ${MYSQL_TCP_PORT}
+#    volumes:
+#      - mariadb-lara10:/var/lib/mysql
+#      - ./share:/shar
+#    ports:
+#      - "${MYSQL_TCP_PORT}:${MYSQL_TCP_PORT}"
+
+#volumes:
+#  mariadb-lara10:
+#  lara10-vendor:
+#  lara10-framework:
+volumes:
+  pg-symfony6:
