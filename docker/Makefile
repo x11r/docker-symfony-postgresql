@@ -5,12 +5,8 @@ app:
 build:
 	docker-compose stop
 	docker-compose up -d --build
-cache:
-	docker-compose exec app php artisan view:clear
-	docker-compose exec app php artisan cache:clear
-	docker-compose exec app php artisan config:clear
-migrate:
-	docker-compose exec app /usr/local/bin/php artisan migrate
+init:
+	docker-comopose exec app /bin/bash -c "cd website-skeleton && composer install"
 restart:
 	docker-compose stop
 	docker-compose up -d
